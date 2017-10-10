@@ -20,7 +20,7 @@ def main():
     print ("--You can get help with 'hc.py help' or just 'hc.py'--\n")
     print ('Number of arguments:', len(sys.argv), 'arguments.')
     print ('Argument List:', str(sys.argv))
-    help()
+   # help()
 
 def help():
     print ("The following commands are avilable \n")
