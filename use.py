@@ -12,11 +12,15 @@ class dose:
         if isinstance(self.time, int):
             print ("Good, time is a DateTime")
     def to_json(self):
-       return (json.dumps(self.__dict__))
+        return (json.dumps({"mg":self.mg, "analgesic":self.analgesic,"halflife":self.halflife,"time":self.time}))
     def __init__(self, mg, analgesic, halflife, time):
         self.mg=mg
         self.analgesic=float(analgesic)
         self.halflife=float(halflife)
         self.time=time
 
+
+now = int(time.time())
+d = dose(150,1,6.0,now)
+val = d.val_dose()
 

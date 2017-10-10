@@ -1,8 +1,21 @@
 import sys
 import json
-
-
+import doses
+from doses import usage
 def main():
+    args = sys.argv
+    if len(sys.argv) > 1 and sys.argv[1] == 'dose':
+        dmg = '150'
+        dstr = '1'
+        if len(sys.argv) > 2:
+            dmg = sys.argv[2]
+        if len(sys.argv) > 3:
+            dstr = sys.argv[3]
+        doses.use(dmg,dstr)
+    if len(sys.argv) > 1 and sys.argv[1] == 'last':
+        dos=doses.get_last_time()
+        ts = dos
+        print(str(ts))
     print ("Herion Cherubim: One Dose At a Time: ")
     print ("--You can get help with 'hc.py help' or just 'hc.py'--\n")
     print ('Number of arguments:', len(sys.argv), 'arguments.')
