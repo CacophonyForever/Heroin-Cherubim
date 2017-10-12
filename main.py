@@ -16,6 +16,10 @@ def main():
         dos=doses.get_last_time()
         ts = dos
         print(str(ts))
+    if len(sys.argv) > 1 and sys.argv[1] == 'dump':
+        print (doses.dump())
+    if len(sys.argv) > 1 and sys.argv[1] == 'level':
+        print (doses.get_cur_lev())
     print ("Herion Cherubim: One Dose At a Time: ")
     print ("--You can get help with 'hc.py help' or just 'hc.py'--\n")
     print ('Number of arguments:', len(sys.argv), 'arguments.')

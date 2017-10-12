@@ -24,6 +24,19 @@ class usage:
         self.get_from_json_file()
         dos = self.doses[0]
         return dos
+    def get_current_level(self):
+        sum=0
+        for dos in self.doses:
+            fac =  2**(((time.time()-float(dos.time))/3600)/dos.halflife)
+            print (str(dos.mg) + " - " + str(fac) + " = = " + str(float(dos.mg)/fac))
+            sum += float(dos.mg)/fac
+            return sum
+    def dump(self):
+        self.get_from_json_file()
+        ret=""
+        for d in self.doses:
+            ret += "\"" + str(d.mg) + "\",\"" + str(d.time) +"\"\n"
+        return ret
     def save_to_json(self, filename):
         with open(filename,'w') as wf:
          for use in self.doses:
@@ -34,6 +47,17 @@ class usage:
     def __init__(self,fn="usage.json"):
         self.doses = []
         self.filename = fn
+
+
+def get_cur_lev():
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    return my_usage.get_current_level()
+
+def dump():
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    return my_usage.dump()
 
 def get_last_time():
     my_usage=usage()
