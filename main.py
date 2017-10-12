@@ -20,6 +20,8 @@ def main():
         print (doses.dump())
     if len(sys.argv) > 1 and sys.argv[1] == 'level':
         print (doses.get_cur_lev())
+    if len(sys.argv) > 2 and sys.argv[1] == 'graph':
+        print(doses.get_levels_since(float(sys.argv[2])))
     print ("Herion Cherubim: One Dose At a Time: ")
     print ("--You can get help with 'hc.py help' or just 'hc.py'--\n")
     print ('Number of arguments:', len(sys.argv), 'arguments.')

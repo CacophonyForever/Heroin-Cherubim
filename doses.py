@@ -30,7 +30,15 @@ class usage:
             fac =  2**(((time.time()-float(dos.time))/3600)/dos.halflife)
             print (str(dos.mg) + " - " + str(fac) + " = = " + str(float(dos.mg)/fac))
             sum += float(dos.mg)/fac
-            return sum
+        return sum
+    def get_level_at_time(self,timestamp):
+        sum=0
+        for dos in self.doses:
+            if (float(dos.time)<float(timestamp)):
+                fac =  2**(((timestamp-float(dos.time))/3600)/dos.halflife)
+                sum += float(dos.mg)/fac
+        return sum
+
     def dump(self):
         self.get_from_json_file()
         ret=""
@@ -48,6 +56,18 @@ class usage:
         self.doses = []
         self.filename = fn
 
+def get_level_at(tstamp):
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    return my_usage.get_level_at_time(tstamp)
+
+def get_levels_since(tstamp):
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    for t in range(int(tstamp), int(time.time())):
+        print (t)
+        print(get_level_at(t))
+    return my_usage.get_level_at_time(tstamp)
 
 def get_cur_lev():
     my_usage=usage()
