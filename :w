@@ -1,0 +1,129 @@
+import json;
+import time;
+from PIL import Image, ImageDraw
+from use import dose;
+import math;
+import sys
+class usage:
+    doses=[]
+    def add_dose(self,d):
+        # todo: check for type
+        self.doses.append(d)
+    def get_num_doses(self):
+        return self.doses.count()
+    def get_dose_num(self,num):
+        return self.doses[num]
+    def get_from_json_file(self):
+       with open("usage.json") as inf:
+        lines = inf.readlines();
+        for dline in lines:
+            dstr = str(dline)
+            dobj=json.loads(str(dstr))
+            d = dose(dobj['mg'],dobj['analgesic'],dobj['halflife'],dobj['time'])
+            self.add_dose(d)
+    def get_last_dose(self):
+        self.get_from_json_file()
+        dos = self.doses[0]
+        return dos
+    def get_current_level(self):
+        sum=0
+        for dos in self.doses:
+            fac =  2**(((time.time()-float(dos.time))/3600)/dos.halflife)
+            print (str(dos.mg) + " - " + str(fac) + " = = " + str(float(dos.mg)/fac))
+            sum += float(dos.mg)/fac
+        return sum
+    def get_level_at_time(self,timestamp):
+        sum=0
+        for dos in self.doses:
+            if (float(dos.time)<float(timestamp)):
+                fac =  2**(((timestamp-float(dos.time))/3600)/dos.halflife)
+                sum += float(dos.mg)/fac
+        return sum
+
+    def dump(self):
+        self.get_from_json_file()
+        ret=""
+        for d in self.doses:
+            ret += "\"" + str(d.mg) + "\",\"" + str(d.time) +"\"\n"
+        return ret
+    def save_to_json(self, filename):
+        with open(filename,'w') as wf:
+         for use in self.doses:
+          d= dose(use.mg,use.analgesic,use.halflife,use.time)
+          print(d)
+          wf.write(d.to_json())
+          wf.write("\n")
+    def __init__(self,fn="usage.json"):
+        self.doses = []
+        self.filename = fn
+
+def get_level_at(tstamp):
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    return my_usage.get_level_at_time(tstamp)
+
+def get_levels_since(tstamp):
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    for t in range(int(tstamp), int(time.time())):
+        print (str(t) + " , " + str(get_level_at(t)))
+    return my_usage.get_level_at_time(tstamp)
+
+def get_cur_lev():
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    return my_usage.get_current_level()
+
+def dump():
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    return my_usage.dump()
+
+def get_last_time():
+    my_usage=usage()
+    my_usage.get_from_json_file()
+    dos = my_usage.get_last_dose()
+    difsecs = (float(time.time()-float(dos.time)))
+    difsecs = math.floor(difsecs)
+    deltasecs = difsecs % 60
+    deltamin = math.floor(difsecs/60) % 60
+    deltahours = math.floor(difsecs/3600)
+    print (str(deltahours) + ":" + str(deltamin) + ":" + str(deltasecs))
+
+def graphpng(filename):
+    sizex=1000
+    sizey=400
+    my_usage = usage()
+    my_usage.get_from_json_file()
+    stime=(my_usage.doses[len(my_usage.doses)-1].time)
+    etime=time.time()
+    dtime=float(etime)-float(stime)
+    print (dtime)
+    tlen=dtime/sizex
+    im = Image.new("RGB",(sizex,sizey),"white")
+    draw = ImageDraw.Draw(im)
+    oval=0
+    for tu in range(0,sizex):
+        ts = float(stime)+tlen*tu
+        val = (my_usage.get_level_at_time(ts))
+        print (str(ts) + "," + str(val))
+        draw.line((tu-1,oval,tu,val), fill=128)
+        print(str(tu) + " , " + str(val))
+        oval=val
+    del draw
+    im.show()
+
+def use(d_mg='150', d_str='1'):
+    my_usage=usage()
+    d=(dose(d_mg,d_str,'8',str(time.time())))
+    my_usage.add_dose(d)
+    dos = json.dumps(d.__dict__)
+    with open("usage.json") as inf:
+        lines = inf.readlines();
+        for dline in lines:
+            dstr = str(dline)
+            dobj=json.loads(str(dstr))
+            d = dose(dobj['mg'],dobj['analgesic'],dobj['halflife'],dobj['time'])
+            my_usage.add_dose(d)
+    my_usage.save_to_json("usage.json")
+

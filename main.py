@@ -19,9 +19,13 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == 'dump':
         print (doses.dump())
     if len(sys.argv) > 1 and sys.argv[1] == 'level':
+        if len(sys.argv) > 2:
+            ts = float (sys.argv[2])
+            print (doses.get_level_at(ts))
+            return
         print (doses.get_cur_lev())
     if len(sys.argv) > 2 and sys.argv[1] == 'graph':
-        print(doses.get_levels_since(float(sys.argv[2])))
+        doses.graphpng("graph.png")
     print ("Herion Cherubim: One Dose At a Time: ")
     print ("--You can get help with 'hc.py help' or just 'hc.py'--\n")
     print ('Number of arguments:', len(sys.argv), 'arguments.')

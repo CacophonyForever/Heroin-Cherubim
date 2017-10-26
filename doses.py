@@ -1,8 +1,9 @@
 import json;
 import time;
+from PIL import Image, ImageDraw
 from use import dose;
 import math;
-
+import sys
 class usage:
     doses=[]
     def add_dose(self,d):
@@ -65,8 +66,7 @@ def get_levels_since(tstamp):
     my_usage=usage()
     my_usage.get_from_json_file()
     for t in range(int(tstamp), int(time.time())):
-        print (t)
-        print(get_level_at(t))
+        print (str(t) + " , " + str(get_level_at(t)))
     return my_usage.get_level_at_time(tstamp)
 
 def get_cur_lev():
@@ -90,10 +90,32 @@ def get_last_time():
     deltahours = math.floor(difsecs/3600)
     print (str(deltahours) + ":" + str(deltamin) + ":" + str(deltasecs))
 
+def graphpng(filename):
+    sizex=2000
+    sizey=400
+    my_usage = usage()
+    my_usage.get_from_json_file()
+    stime=(my_usage.doses[len(my_usage.doses)-1].time)
+    etime=time.time()
+    dtime=float(etime)-float(stime)
+    print (dtime)
+    tlen=dtime/sizex
+    im = Image.new("RGB",(sizex,sizey),"white")
+    draw = ImageDraw.Draw(im)
+    oval=0
+    for tu in range(0,sizex+1):
+        ts = float(stime)+tlen*tu
+        val = (my_usage.get_level_at_time(ts))
+        print (str(ts) + "," + str(val))
+        draw.line((tu-1,sizey-oval,tu,sizey-val), fill=128)
+        print(str(tu) + " , " + str(val))
+        oval=val
+    del draw
+    im.show()
 
 def use(d_mg='150', d_str='1'):
     my_usage=usage()
-    d=(dose(d_mg,d_str,'1',str(time.time())))
+    d=(dose(d_mg,d_str,'8',str(time.time())))
     my_usage.add_dose(d)
     dos = json.dumps(d.__dict__)
     with open("usage.json") as inf:
